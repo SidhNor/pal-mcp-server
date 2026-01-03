@@ -603,7 +603,21 @@ class OpenAICompatibleProvider(ModelProvider):
         # Add any additional OpenAI-specific parameters
         # Use capabilities to filter parameters for reasoning models
         for key, value in kwargs.items():
-            if key in ["top_p", "frequency_penalty", "presence_penalty", "seed", "stop", "stream"]:
+            if key in [
+                "top_p",
+                "frequency_penalty",
+                "presence_penalty",
+                "seed",
+                "stop",
+                "stream",
+                "tools",
+                "tool_choice",
+                "parallel_tool_calls",
+                "response_format",
+                "extra_body",
+                "extra_headers",
+                "extra_query",
+            ]:
                 # Reasoning models (those that don't support temperature) also don't support these parameters
                 if not supports_sampling and key in ["top_p", "frequency_penalty", "presence_penalty", "stream"]:
                     continue  # Skip unsupported parameters for reasoning models

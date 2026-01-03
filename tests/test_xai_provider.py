@@ -218,6 +218,99 @@ class TestXAIProvider:
         provider = XAIModelProvider("test-key")
 
         assert provider.validate_model_name("grok-4") is True
+
+    @patch("providers.openai_compatible.OpenAI")
+    def test_generate_content_enables_x_search_for_x_post(self, mock_openai_class):
+        """X post URLs should enable xAI's agentic x_search tool via Responses API."""
+
+        mock_client = MagicMock()
+        mock_openai_class.return_value = mock_client
+
+        mock_response = MagicMock()
+        mock_response.output_text = "Test response"
+        mock_response.model = "grok-4"
+        mock_response.id = "test-id"
+        mock_response.created_at = 1234567890
+        mock_response.usage = MagicMock()
+        mock_response.usage.input_tokens = 10
+        mock_response.usage.output_tokens = 5
+        mock_response.usage.total_tokens = 15
+
+        mock_client.responses.create.return_value = mock_response
+
+        provider = XAIModelProvider("test-key")
+        result = provider.generate_content(
+            prompt="Use grok to summarize this X post https://x.com/bcherny/status/2007179832300581177",
+            model_name="grok",
+        )
+
+        assert result.content == "Test response"
+
+        mock_client.responses.create.assert_called_once()
+        call_kwargs = mock_client.responses.create.call_args[1]
+
+        assert call_kwargs["tool_choice"] == "auto"
+        assert call_kwargs["tools"] == [{"type": "x_search", "sources": ["x"]}]
+        assert call_kwargs["model"] == "grok-4"
+        assert call_kwargs["input"].startswith("Use grok")
+
+    @patch("providers.openai_compatible.OpenAI")
+    def test_generate_content_respects_disable_x_search_env_var(self, mock_openai_class):
+        """XAI_ENABLE_X_SEARCH=false should avoid x_search tool injection."""
+
+        mock_client = MagicMock()
+        mock_openai_class.return_value = mock_client
+
+        mock_response = MagicMock()
+        mock_response.choices = [MagicMock()]
+        mock_response.choices[0].message.content = "Test response"
+        mock_response.choices[0].finish_reason = "stop"
+        mock_response.usage = MagicMock()
+        mock_response.usage.prompt_tokens = 10
+        mock_response.usage.completion_tokens = 5
+        mock_response.usage.total_tokens = 15
+
+        mock_client.chat.completions.create.return_value = mock_response
+
+        with patch.dict(os.environ, {"XAI_ENABLE_X_SEARCH": "false"}):
+            provider = XAIModelProvider("test-key")
+            provider.generate_content(
+                prompt="Summarize https://x.com/bcherny/status/2007179832300581177",
+                model_name="grok-4",
+            )
+
+        call_kwargs = mock_client.chat.completions.create.call_args[1]
+        assert "tools" not in call_kwargs
+        assert "tool_choice" not in call_kwargs
+        assert "extra_body" not in call_kwargs
+        assert not mock_client.responses.create.called
+
+    @patch("providers.openai_compatible.OpenAI")
+    def test_generate_content_normalizes_string_tools(self, mock_openai_class):
+        """Caller-supplied tool params should not override x_search handling for X URLs."""
+
+        mock_client = MagicMock()
+        mock_openai_class.return_value = mock_client
+
+        mock_response = MagicMock()
+        mock_response.output_text = "Test response"
+        mock_response.usage = MagicMock()
+        mock_response.usage.input_tokens = 10
+        mock_response.usage.output_tokens = 5
+        mock_response.usage.total_tokens = 15
+
+        mock_client.responses.create.return_value = mock_response
+
+        provider = XAIModelProvider("test-key")
+        provider.generate_content(
+            prompt="Summarize https://x.com/bcherny/status/2007179832300581177",
+            model_name="grok",
+            tools=["x_search"],
+        )
+
+        mock_client.responses.create.assert_called_once()
+        call_kwargs = mock_client.responses.create.call_args[1]
+        assert call_kwargs["tools"] == [{"type": "x_search", "sources": ["x"]}]
         assert provider.validate_model_name("grok-4.1-fast") is True
         assert provider.validate_model_name("grok-4.1-fast-reasoning") is True
         assert provider.validate_model_name("grok") is True
