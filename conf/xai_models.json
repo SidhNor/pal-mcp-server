@@ -32,7 +32,7 @@
         "grok4",
         "grok-4"
       ],
-      "intelligence_score": 16,
+      "intelligence_score": 18,
       "description": "GROK-4 (256K context) - Frontier multimodal reasoning model with advanced capabilities",
       "context_window": 256000,
       "max_output_tokens": 256000,
@@ -46,6 +46,25 @@
       "max_image_size_mb": 20.0
     },
     {
+      "model_name": "grok-code-fast-1",
+      "friendly_name": "X.AI (Grok Code Fast)",
+      "aliases": [
+        "grok-code",
+        "grok-code-fast"
+      ],
+      "intelligence_score": 16,
+      "description": "GROK-CODE (256K context) - a speedy and economical reasoning model that excels at agentic coding",
+      "context_window": 256000,
+      "max_output_tokens": 256000,
+      "supports_extended_thinking": true,
+      "supports_system_prompts": true,
+      "supports_streaming": true,
+      "supports_function_calling": true,
+      "supports_json_mode": true,
+      "supports_images": true,
+      "supports_temperature": true
+    },
+    {
       "model_name": "grok-4-1-fast-reasoning",
       "friendly_name": "X.AI (Grok 4.1 Fast Reasoning)",
       "aliases": [
@@ -56,7 +75,7 @@
         "grok-4.1-fast"
       ],
       "intelligence_score": 15,
-      "description": "GROK-4.1 Fast Reasoning (2M context) - High-performance multimodal reasoning model with function calling",
+      "description": "GROK-4.1 Fast Reasoning (2M context) - A frontier multimodal model optimized specifically for high-performance agentic tool calling",
       "context_window": 2000000,
       "max_output_tokens": 2000000,
       "supports_extended_thinking": true,

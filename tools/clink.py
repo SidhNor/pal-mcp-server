@@ -50,6 +50,14 @@ class CLinkRequest(BaseModel):
         default=None,
         description=COMMON_FIELD_DESCRIPTIONS["continuation_id"],
     )
+    working_dir: str | None = Field(
+        default=None,
+        description=(
+            "Optional: The working directory to run the CLI command in. If not provided, it will use the CLI "
+            "client's configured working_dir if set, otherwise the current process working directory. If provided, "
+            "it must be within the server's current working directory."
+        ),
+    )
 
 
 class CLinkTool(SimpleTool):
@@ -143,6 +151,14 @@ class CLinkTool(SimpleTool):
             "absolute_file_paths": SchemaBuilder.SIMPLE_FIELD_SCHEMAS["absolute_file_paths"],
             "images": SchemaBuilder.COMMON_FIELD_SCHEMAS["images"],
             "continuation_id": SchemaBuilder.COMMON_FIELD_SCHEMAS["continuation_id"],
+            "working_dir": {
+                "type": "string",
+                "description": (
+                    "Optional: The working directory to run the CLI command in. If not provided, it will use the "
+                    "CLI client's configured working_dir if set, otherwise the current process working directory. "
+                    "If provided, it must be within the server's current working directory."
+                ),
+            },
         }
 
         schema = {
@@ -211,6 +227,7 @@ class CLinkTool(SimpleTool):
                 system_prompt=system_prompt_text if system_prompt_text.strip() else None,
                 files=absolute_file_paths,
                 images=images,
+                working_dir=request.working_dir,
             )
         except CLIAgentError as exc:
             metadata = self._build_error_metadata(client_config, exc)

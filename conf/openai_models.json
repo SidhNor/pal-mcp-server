@@ -117,102 +117,6 @@
       "temperature_constraint": "fixed"
     },
     {
-      "model_name": "o3",
-      "friendly_name": "OpenAI (O3)",
-      "intelligence_score": 14,
-      "description": "Strong reasoning (200K context) - Logical problems, code generation, systematic analysis",
-      "context_window": 200000,
-      "max_output_tokens": 65536,
-      "supports_extended_thinking": false,
-      "supports_system_prompts": true,
-      "supports_streaming": true,
-      "supports_function_calling": true,
-      "supports_json_mode": true,
-      "supports_images": true,
-      "supports_temperature": false,
-      "max_image_size_mb": 20.0,
-      "temperature_constraint": "fixed"
-    },
-    {
-      "model_name": "o3-mini",
-      "friendly_name": "OpenAI (O3-mini)",
-      "aliases": [
-        "o3mini"
-      ],
-      "intelligence_score": 12,
-      "description": "Fast O3 variant (200K context) - Balanced performance/speed, moderate complexity",
-      "context_window": 200000,
-      "max_output_tokens": 65536,
-      "supports_extended_thinking": false,
-      "supports_system_prompts": true,
-      "supports_streaming": true,
-      "supports_function_calling": true,
-      "supports_json_mode": true,
-      "supports_images": true,
-      "supports_temperature": false,
-      "max_image_size_mb": 20.0,
-      "temperature_constraint": "fixed"
-    },
-    {
-      "model_name": "o3-pro",
-      "friendly_name": "OpenAI (O3-Pro)",
-      "aliases": [
-        "o3pro"
-      ],
-      "intelligence_score": 15,
-      "description": "Professional-grade reasoning with advanced capabilities (200K context)",
-      "context_window": 200000,
-      "max_output_tokens": 65536,
-      "supports_extended_thinking": false,
-      "supports_system_prompts": true,
-      "supports_streaming": true,
-      "supports_function_calling": true,
-      "supports_json_mode": true,
-      "supports_images": true,
-      "supports_temperature": false,
-      "max_image_size_mb": 20.0,
-      "use_openai_response_api": true,
-      "temperature_constraint": "fixed"
-    },
-    {
-      "model_name": "o4-mini",
-      "friendly_name": "OpenAI (O4-mini)",
-      "aliases": [
-        "o4mini"
-      ],
-      "intelligence_score": 11,
-      "description": "Latest reasoning model (200K context) - Optimized for shorter contexts, rapid reasoning",
-      "context_window": 200000,
-      "supports_extended_thinking": false,
-      "supports_system_prompts": true,
-      "supports_streaming": true,
-      "supports_function_calling": true,
-      "supports_json_mode": true,
-      "supports_images": true,
-      "supports_temperature": false,
-      "max_image_size_mb": 20.0,
-      "temperature_constraint": "fixed"
-    },
-    {
-      "model_name": "gpt-4.1",
-      "friendly_name": "OpenAI (GPT 4.1)",
-      "aliases": [
-        "gpt4.1"
-      ],
-      "intelligence_score": 13,
-      "description": "GPT-4.1 (1M context) - Advanced reasoning model with large context window",
-      "context_window": 1000000,
-      "max_output_tokens": 32768,
-      "supports_extended_thinking": false,
-      "supports_system_prompts": true,
-      "supports_streaming": true,
-      "supports_function_calling": true,
-      "supports_json_mode": true,
-      "supports_images": true,
-      "supports_temperature": true,
-      "max_image_size_mb": 20.0
-    },
-    {
       "model_name": "gpt-5-codex",
       "friendly_name": "OpenAI (GPT-5 Codex)",
       "aliases": [
@@ -303,6 +207,7 @@
       "context_window": 400000,
       "max_output_tokens": 128000,
       "supports_extended_thinking": true,
+      "use_openai_response_api": true,
       "supports_system_prompts": true,
       "supports_streaming": true,
       "supports_function_calling": true,

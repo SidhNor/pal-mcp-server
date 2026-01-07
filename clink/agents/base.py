@@ -60,6 +60,7 @@ class BaseCLIAgent:
         system_prompt: str | None = None,
         files: Sequence[str],
         images: Sequence[str],
+        working_dir: str | None = None,
     ) -> AgentOutput:
         # Files and images are already embedded into the prompt by the tool; they are
         # accepted here only to keep parity with SimpleTool callers.
@@ -79,8 +80,22 @@ class BaseCLIAgent:
         command[0] = resolved_executable
 
         sanitized_command = list(command)
-
-        cwd = str(self.client.working_dir) if self.client.working_dir else None
+        cwd = working_dir or (str(self.client.working_dir) if self.client.working_dir else None)
+        if working_dir is not None:
+            workspace_root = Path.cwd().resolve()          
+            self._logger.debug("Workspace root: %s" , workspace_root)
+            resolved_working_dir = Path(working_dir).resolve()
+            self._logger.debug("Resolved dir: %s" , resolved_working_dir)
+            if not resolved_working_dir.is_dir():
+                raise CLIAgentError(f"Working directory '{working_dir}' does not exist or is not a directory.")
+            try:
+                resolved_working_dir.relative_to(workspace_root)
+            except ValueError as exc:
+                self._logger.debug("Working directory is outside workspace")
+                raise CLIAgentError(
+                    f"Working directory '{working_dir}' is outside the workspace root '{workspace_root}'."
+                ) from exc
+            cwd = str(resolved_working_dir)
         limit = DEFAULT_STREAM_LIMIT
 
         stdout_text = ""
