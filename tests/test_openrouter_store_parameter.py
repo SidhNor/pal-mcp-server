@@ -56,6 +56,26 @@ class MockOpenAIProvider(OpenAICompatibleProvider):
         return ["gpt-5-pro", "gpt-5.1-codex"]
 
 
+class MockXAIProvider(OpenAICompatibleProvider):
+    """Mock provider that simulates xAI Responses API models without default reasoning effort."""
+
+    FRIENDLY_NAME = "XAI Test"
+
+    def get_provider_type(self):
+        return ProviderType.XAI
+
+    def get_capabilities(self, model_name):
+        mock_caps = Mock()
+        mock_caps.default_reasoning_effort = None
+        return mock_caps
+
+    def validate_model_name(self, model_name):
+        return True
+
+    def list_models(self, **kwargs):
+        return ["grok-4.20-reasoning"]
+
+
 class TestStoreParameterHandling(unittest.TestCase):
     """Test store parameter is conditionally included based on provider type.
 
@@ -139,6 +159,60 @@ class TestStoreParameterHandling(unittest.TestCase):
         # Verify store parameter IS in the request with value True
         self.assertIn("store", captured_params, "OpenAI requests should include 'store' parameter")
         self.assertTrue(captured_params["store"], "OpenAI requests should have store=True")
+
+    def test_responses_include_reasoning_only_when_default_effort_is_configured(self):
+        """Responses API requests should include reasoning only when capabilities specify a default."""
+        captured_params = {}
+
+        def capture_create(**kwargs):
+            captured_params.update(kwargs)
+            mock_response = Mock()
+            mock_response.output_text = "Test response"
+            mock_response.usage = None
+            return mock_response
+
+        mock_client_instance = Mock()
+        mock_client_instance.responses.create = capture_create
+
+        with patch.object(
+            MockOpenAIProvider, "client", new_callable=lambda: property(lambda self: mock_client_instance)
+        ):
+            provider = MockOpenAIProvider("test-key")
+            provider._generate_with_responses_endpoint(
+                model_name="gpt-5-pro",
+                messages=[{"role": "user", "content": "test"}],
+                temperature=0.7,
+                capabilities=provider.get_capabilities("gpt-5-pro"),
+            )
+
+        self.assertEqual(captured_params.get("reasoning"), {"effort": "high"})
+
+    def test_responses_omit_reasoning_when_no_default_effort_is_configured(self):
+        """Responses API requests should not inject reasoning without explicit config."""
+        captured_params = {}
+
+        def capture_create(**kwargs):
+            captured_params.update(kwargs)
+            mock_response = Mock()
+            mock_response.output_text = "Test response"
+            mock_response.usage = None
+            return mock_response
+
+        mock_client_instance = Mock()
+        mock_client_instance.responses.create = capture_create
+
+        with patch.object(
+            MockXAIProvider, "client", new_callable=lambda: property(lambda self: mock_client_instance)
+        ):
+            provider = MockXAIProvider("test-key")
+            provider._generate_with_responses_endpoint(
+                model_name="grok-4.20-reasoning",
+                messages=[{"role": "user", "content": "test"}],
+                temperature=0.7,
+                capabilities=provider.get_capabilities("grok-4.20-reasoning"),
+            )
+
+        self.assertNotIn("reasoning", captured_params, "Responses requests should omit reasoning by default")
 
 
 if __name__ == "__main__":

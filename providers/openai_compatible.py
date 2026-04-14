@@ -413,15 +413,13 @@ class OpenAICompatibleProvider(ModelProvider):
 
         # Prepare completion parameters for responses endpoint
         # Based on OpenAI documentation, use nested reasoning object for responses endpoint
-        effort = "medium"
-        if capabilities and capabilities.default_reasoning_effort:
-            effort = capabilities.default_reasoning_effort
-
         completion_params = {
             "model": model_name,
             "input": input_messages,
-            "reasoning": {"effort": effort},
         }
+
+        if capabilities and capabilities.default_reasoning_effort:
+            completion_params["reasoning"] = {"effort": capabilities.default_reasoning_effort}
 
         # Only include store parameter for providers that support it.
         # OpenRouter's /responses endpoint rejects store:true via Zod validation (Issue #348).
