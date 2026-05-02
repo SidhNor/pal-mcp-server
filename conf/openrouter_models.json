@@ -472,11 +472,31 @@
       "intelligence_score": 16
     },
     {
+      "model_name": "x-ai/grok-4.3",
+      "aliases": [
+        "grok",
+        "grok-4.3",
+        "grok43",
+        "grok-4.3-openrouter",
+        "grok43-openrouter"
+      ],
+      "context_window": 1000000,
+      "max_output_tokens": 1000000,
+      "supports_extended_thinking": true,
+      "supports_json_mode": true,
+      "supports_function_calling": true,
+      "supports_images": true,
+      "max_image_size_mb": 20.0,
+      "supports_temperature": true,
+      "temperature_constraint": "range",
+      "description": "xAI's Grok 4.3 via OpenRouter with vision, always-on reasoning, and agentic workflow support",
+      "intelligence_score": 18
+    },
+    {
       "model_name": "x-ai/grok-4",
       "aliases": [
         "grok-4",
-        "grok4",
-        "grok"
+        "grok4"
       ],
       "context_window": 256000,
       "max_output_tokens": 256000,
