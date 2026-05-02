@@ -19,8 +19,10 @@ class TestSupportedModelsAliases:
             assert isinstance(config.aliases, list), f"{model_name} aliases must be a list"
 
         # Test specific aliases
+        assert "gemini3-flash" in provider.MODEL_CAPABILITIES["gemini-3-flash-preview"].aliases
         assert "flash" in provider.MODEL_CAPABILITIES["gemini-2.5-flash"].aliases
         assert "pro" in provider.MODEL_CAPABILITIES["gemini-3-pro-preview"].aliases
+        assert "flashlite-2.5" in provider.MODEL_CAPABILITIES["gemini-2.5-flash-lite"].aliases
         assert "flash-2.0" in provider.MODEL_CAPABILITIES["gemini-2.0-flash"].aliases
         assert "flash2" in provider.MODEL_CAPABILITIES["gemini-2.0-flash"].aliases
         assert "flashlite" in provider.MODEL_CAPABILITIES["gemini-2.0-flash-lite"].aliases
@@ -47,6 +49,8 @@ class TestSupportedModelsAliases:
             assert isinstance(config.aliases, list), f"{model_name} aliases must be a list"
 
         # Test specific aliases
+        assert "gpt54" in provider.MODEL_CAPABILITIES["gpt-5.4"].aliases
+        assert "gpt54mini" in provider.MODEL_CAPABILITIES["gpt-5.4-mini"].aliases
         # "mini" is now an alias for gpt-5-mini, not o4-mini
         assert "mini" in provider.MODEL_CAPABILITIES["gpt-5-mini"].aliases
         assert "o4mini" in provider.MODEL_CAPABILITIES["o4-mini"].aliases
@@ -55,24 +59,26 @@ class TestSupportedModelsAliases:
         assert "o3pro" in provider.MODEL_CAPABILITIES["o3-pro"].aliases
         assert "gpt4.1" in provider.MODEL_CAPABILITIES["gpt-4.1"].aliases
         assert "gpt5.2" in provider.MODEL_CAPABILITIES["gpt-5.2"].aliases
+        assert "gpt5.1" in provider.MODEL_CAPABILITIES["gpt-5.1"].aliases
         assert "gpt5.1-codex" in provider.MODEL_CAPABILITIES["gpt-5.1-codex"].aliases
         assert "codex-mini" in provider.MODEL_CAPABILITIES["gpt-5.1-codex-mini"].aliases
 
         # Test alias resolution
+        assert provider._resolve_model_name("gpt54") == "gpt-5.4"
         assert provider._resolve_model_name("mini") == "gpt-5-mini"  # mini -> gpt-5-mini now
         assert provider._resolve_model_name("o3mini") == "o3-mini"
         assert provider._resolve_model_name("o3pro") == "o3-pro"  # o3pro resolves to o3-pro
         assert provider._resolve_model_name("o4mini") == "o4-mini"
         assert provider._resolve_model_name("gpt4.1") == "gpt-4.1"  # gpt4.1 resolves to gpt-4.1
         assert provider._resolve_model_name("gpt5.2") == "gpt-5.2"
-        assert provider._resolve_model_name("gpt5.1") == "gpt-5.2"
+        assert provider._resolve_model_name("gpt5.1") == "gpt-5.1"
         assert provider._resolve_model_name("gpt5.1-codex") == "gpt-5.1-codex"
         assert provider._resolve_model_name("codex-mini") == "gpt-5.1-codex-mini"
 
         # Test case insensitive resolution
         assert provider._resolve_model_name("Mini") == "gpt-5-mini"  # mini -> gpt-5-mini now
         assert provider._resolve_model_name("O3MINI") == "o3-mini"
-        assert provider._resolve_model_name("Gpt5.1") == "gpt-5.2"
+        assert provider._resolve_model_name("Gpt5.1") == "gpt-5.1"
 
     def test_xai_provider_aliases(self):
         """Test XAI provider's alias structure."""
@@ -84,18 +90,24 @@ class TestSupportedModelsAliases:
             assert isinstance(config.aliases, list), f"{model_name} aliases must be a list"
 
         # Test specific aliases
-        assert "grok" in provider.MODEL_CAPABILITIES["grok-4"].aliases
+        assert "grok" in provider.MODEL_CAPABILITIES["grok-4.3"].aliases
+        assert "grok43" in provider.MODEL_CAPABILITIES["grok-4.3"].aliases
         assert "grok4" in provider.MODEL_CAPABILITIES["grok-4"].aliases
+        assert "grok-4.20" in provider.MODEL_CAPABILITIES["grok-4.20-0309-reasoning"].aliases
+        assert "grok-fast" in provider.MODEL_CAPABILITIES["grok-4-fast-reasoning"].aliases
         assert "grok-4.1-fast-reasoning" in provider.MODEL_CAPABILITIES["grok-4-1-fast-reasoning"].aliases
 
         # Test alias resolution
-        assert provider._resolve_model_name("grok") == "grok-4"
+        assert provider._resolve_model_name("grok") == "grok-4.3"
+        assert provider._resolve_model_name("grok43") == "grok-4.3"
         assert provider._resolve_model_name("grok4") == "grok-4"
+        assert provider._resolve_model_name("grok-4.20") == "grok-4.20-0309-reasoning"
+        assert provider._resolve_model_name("grok-fast") == "grok-4-fast-reasoning"
         assert provider._resolve_model_name("grok-4.1-fast-reasoning") == "grok-4-1-fast-reasoning"
         assert provider._resolve_model_name("grok-4.1-fast-reasoning-latest") == "grok-4-1-fast-reasoning"
 
         # Test case insensitive resolution
-        assert provider._resolve_model_name("Grok") == "grok-4"
+        assert provider._resolve_model_name("Grok") == "grok-4.3"
         assert provider._resolve_model_name("GROK-4.1-FAST-REASONING") == "grok-4-1-fast-reasoning"
 
     def test_dial_provider_aliases(self):
@@ -128,7 +140,7 @@ class TestSupportedModelsAliases:
         """Test that list_models returns both base models and aliases."""
         # Test Gemini
         gemini_provider = GeminiModelProvider("test-key")
-        gemini_models = gemini_provider.list_models(respect_restrictions=False)
+        gemini_models = gemini_provider.list_models(respect_restrictions=False, include_aliases=True)
         assert "gemini-2.5-flash" in gemini_models
         assert "flash" in gemini_models
         assert "gemini-3-pro-preview" in gemini_models
@@ -136,7 +148,7 @@ class TestSupportedModelsAliases:
 
         # Test OpenAI
         openai_provider = OpenAIModelProvider("test-key")
-        openai_models = openai_provider.list_models(respect_restrictions=False)
+        openai_models = openai_provider.list_models(respect_restrictions=False, include_aliases=True)
         assert "o4-mini" in openai_models
         assert "mini" in openai_models
         assert "o3-mini" in openai_models
@@ -144,15 +156,17 @@ class TestSupportedModelsAliases:
 
         # Test XAI
         xai_provider = XAIModelProvider("test-key")
-        xai_models = xai_provider.list_models(respect_restrictions=False)
+        xai_models = xai_provider.list_models(respect_restrictions=False, include_aliases=True)
+        assert "grok-4.3" in xai_models
         assert "grok-4" in xai_models
+        assert "grok-4.20-0309-reasoning" in xai_models
         assert "grok" in xai_models
-        assert "grok-4.1-fast" in xai_models
+        assert "grok-4-fast-reasoning" in xai_models
         assert "grok-4.1-fast-reasoning" in xai_models
 
         # Test DIAL
         dial_provider = DIALModelProvider("test-key")
-        dial_models = dial_provider.list_models(respect_restrictions=False)
+        dial_models = dial_provider.list_models(respect_restrictions=False, include_aliases=True)
         assert "o3-2025-04-16" in dial_models
         assert "o3" in dial_models
 

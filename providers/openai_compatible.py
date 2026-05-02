@@ -430,9 +430,9 @@ class OpenAICompatibleProvider(ModelProvider):
         else:
             logging.debug(f"Omitting 'store' parameter for OpenRouter provider (model: {model_name})")
 
-        # Add max tokens if specified (using max_completion_tokens for responses endpoint)
+        # Add max tokens if specified (Responses API uses max_output_tokens)
         if max_output_tokens:
-            completion_params["max_completion_tokens"] = max_output_tokens
+            completion_params["max_output_tokens"] = max_output_tokens
 
         # For responses endpoint, we only add parameters that are explicitly supported
         # Remove unsupported chat completion parameters that may cause API errors

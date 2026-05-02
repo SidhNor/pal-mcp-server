@@ -49,8 +49,10 @@ class TestOpenAIProvider:
         assert provider.validate_model_name("o4-mini") is True
         assert provider.validate_model_name("o4-mini") is True
         assert provider.validate_model_name("gpt-5") is True
+        assert provider.validate_model_name("gpt-5.4") is True
         assert provider.validate_model_name("gpt-5-mini") is True
         assert provider.validate_model_name("gpt-5.2") is True
+        assert provider.validate_model_name("gpt-5.1") is True
         assert provider.validate_model_name("gpt-5.1-codex") is True
         assert provider.validate_model_name("gpt-5.1-codex-mini") is True
 
@@ -60,6 +62,7 @@ class TestOpenAIProvider:
         assert provider.validate_model_name("o4mini") is True
         assert provider.validate_model_name("o4mini") is True
         assert provider.validate_model_name("gpt5") is True
+        assert provider.validate_model_name("gpt54") is True
         assert provider.validate_model_name("gpt5-mini") is True
         assert provider.validate_model_name("gpt5mini") is True
         assert provider.validate_model_name("gpt5.2") is True
@@ -78,6 +81,7 @@ class TestOpenAIProvider:
 
         # Test shorthand resolution
         assert provider._resolve_model_name("mini") == "gpt-5-mini"  # "mini" now resolves to gpt-5-mini
+        assert provider._resolve_model_name("gpt54") == "gpt-5.4"
         assert provider._resolve_model_name("o3mini") == "o3-mini"
         assert provider._resolve_model_name("o4mini") == "o4-mini"
         assert provider._resolve_model_name("o4mini") == "o4-mini"
@@ -85,7 +89,7 @@ class TestOpenAIProvider:
         assert provider._resolve_model_name("gpt5-mini") == "gpt-5-mini"
         assert provider._resolve_model_name("gpt5mini") == "gpt-5-mini"
         assert provider._resolve_model_name("gpt5.2") == "gpt-5.2"
-        assert provider._resolve_model_name("gpt5.1") == "gpt-5.2"
+        assert provider._resolve_model_name("gpt5.1") == "gpt-5.1"
         assert provider._resolve_model_name("gpt5.1-codex") == "gpt-5.1-codex"
         assert provider._resolve_model_name("codex-mini") == "gpt-5.1-codex-mini"
 
@@ -96,9 +100,10 @@ class TestOpenAIProvider:
         assert provider._resolve_model_name("o4-mini") == "o4-mini"
         assert provider._resolve_model_name("o4-mini") == "o4-mini"
         assert provider._resolve_model_name("gpt-5") == "gpt-5"
+        assert provider._resolve_model_name("gpt-5.4") == "gpt-5.4"
         assert provider._resolve_model_name("gpt-5-mini") == "gpt-5-mini"
         assert provider._resolve_model_name("gpt-5.2") == "gpt-5.2"
-        assert provider._resolve_model_name("gpt-5.1") == "gpt-5.2"
+        assert provider._resolve_model_name("gpt-5.1") == "gpt-5.1"
         assert provider._resolve_model_name("gpt-5.1-codex") == "gpt-5.1-codex"
         assert provider._resolve_model_name("gpt-5.1-codex-mini") == "gpt-5.1-codex-mini"
 
@@ -108,7 +113,7 @@ class TestOpenAIProvider:
 
         capabilities = provider.get_capabilities("o3")
         assert capabilities.model_name == "o3"  # Should NOT be resolved in capabilities
-        assert capabilities.friendly_name == "OpenAI (O3)"
+        assert capabilities.friendly_name == "OpenAI (o3)"
         assert capabilities.context_window == 200_000
         assert capabilities.provider == ProviderType.OPENAI
         assert not capabilities.supports_extended_thinking
@@ -125,7 +130,7 @@ class TestOpenAIProvider:
 
         capabilities = provider.get_capabilities("mini")
         assert capabilities.model_name == "gpt-5-mini"  # "mini" now resolves to gpt-5-mini
-        assert capabilities.friendly_name == "OpenAI (GPT-5-mini)"
+        assert capabilities.friendly_name == "OpenAI (GPT-5 mini)"
         assert capabilities.context_window == 400_000
         assert capabilities.provider == ProviderType.OPENAI
 
@@ -141,7 +146,7 @@ class TestOpenAIProvider:
         assert capabilities.provider == ProviderType.OPENAI
         assert capabilities.supports_extended_thinking is True
         assert capabilities.supports_system_prompts is True
-        assert capabilities.supports_streaming is False
+        assert capabilities.supports_streaming is True
         assert capabilities.supports_function_calling is True
         assert capabilities.supports_temperature is True
 
@@ -151,13 +156,13 @@ class TestOpenAIProvider:
 
         capabilities = provider.get_capabilities("gpt-5-mini")
         assert capabilities.model_name == "gpt-5-mini"
-        assert capabilities.friendly_name == "OpenAI (GPT-5-mini)"
+        assert capabilities.friendly_name == "OpenAI (GPT-5 mini)"
         assert capabilities.context_window == 400_000
         assert capabilities.max_output_tokens == 128_000
         assert capabilities.provider == ProviderType.OPENAI
         assert capabilities.supports_extended_thinking is True
         assert capabilities.supports_system_prompts is True
-        assert capabilities.supports_streaming is False
+        assert capabilities.supports_streaming is True
         assert capabilities.supports_function_calling is True
         assert capabilities.supports_temperature is True
 
@@ -178,7 +183,7 @@ class TestOpenAIProvider:
 
         capabilities = provider.get_capabilities("gpt-5.1-codex")
         assert capabilities.model_name == "gpt-5.1-codex"
-        assert capabilities.supports_streaming is False
+        assert capabilities.supports_streaming is True
         assert capabilities.use_openai_response_api is True
         assert capabilities.allow_code_generation is True
 

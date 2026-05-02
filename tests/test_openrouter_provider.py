@@ -93,7 +93,8 @@ class TestOpenRouterProvider:
         assert provider._resolve_model_name("mistral") == "mistralai/mistral-large-2411"
         assert provider._resolve_model_name("grok-4") == "x-ai/grok-4"
         assert provider._resolve_model_name("grok4") == "x-ai/grok-4"
-        assert provider._resolve_model_name("grok") == "x-ai/grok-4"
+        assert provider._resolve_model_name("grok") == "x-ai/grok-4.3"
+        assert provider._resolve_model_name("grok-4.3") == "x-ai/grok-4.3"
         assert provider._resolve_model_name("deepseek") == "deepseek/deepseek-r1-0528"
         assert provider._resolve_model_name("r1") == "deepseek/deepseek-r1-0528"
 

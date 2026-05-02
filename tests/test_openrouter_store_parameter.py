@@ -214,6 +214,35 @@ class TestStoreParameterHandling(unittest.TestCase):
 
         self.assertNotIn("reasoning", captured_params, "Responses requests should omit reasoning by default")
 
+    def test_responses_use_max_output_tokens_parameter(self):
+        """Responses API requests should use max_output_tokens for output limits."""
+        captured_params = {}
+
+        def capture_create(**kwargs):
+            captured_params.update(kwargs)
+            mock_response = Mock()
+            mock_response.output_text = "Test response"
+            mock_response.usage = None
+            return mock_response
+
+        mock_client_instance = Mock()
+        mock_client_instance.responses.create = capture_create
+
+        with patch.object(
+            MockXAIProvider, "client", new_callable=lambda: property(lambda self: mock_client_instance)
+        ):
+            provider = MockXAIProvider("test-key")
+            provider._generate_with_responses_endpoint(
+                model_name="grok-4.3",
+                messages=[{"role": "user", "content": "test"}],
+                temperature=0.7,
+                max_output_tokens=123,
+                capabilities=provider.get_capabilities("grok-4.3"),
+            )
+
+        self.assertEqual(captured_params.get("max_output_tokens"), 123)
+        self.assertNotIn("max_completion_tokens", captured_params)
+
 
 if __name__ == "__main__":
     unittest.main()

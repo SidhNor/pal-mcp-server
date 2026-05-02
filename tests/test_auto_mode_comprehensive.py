@@ -81,8 +81,8 @@ class TestAutoModeComprehensive:
                 },
                 {
                     "EXTENDED_REASONING": "gemini-3-pro-preview",  # Gemini 3 Pro Preview for deep thinking
-                    "FAST_RESPONSE": "gemini-2.5-flash",  # Flash for speed
-                    "BALANCED": "gemini-2.5-flash",  # Flash as balanced
+                    "FAST_RESPONSE": "gemini-3-flash-preview",  # Flash 3 now ranks highest for speed
+                    "BALANCED": "gemini-3-flash-preview",  # Flash 3 now ranks highest for balanced
                 },
             ),
             # Only OpenAI API available
@@ -108,9 +108,9 @@ class TestAutoModeComprehensive:
                     "OPENROUTER_API_KEY": None,
                 },
                 {
-                    "EXTENDED_REASONING": "grok-4-1-fast-reasoning",  # Latest Grok 4.1 Fast Reasoning
-                    "FAST_RESPONSE": "grok-4-1-fast-reasoning",  # Latest fast SKU
-                    "BALANCED": "grok-4-1-fast-reasoning",  # Latest balanced default
+                    "EXTENDED_REASONING": "grok-4.3",  # Latest flagship Grok reasoning SKU
+                    "FAST_RESPONSE": "grok-4-fast-reasoning",  # Latest fast SKU
+                    "BALANCED": "grok-4-fast-reasoning",  # Latest balanced default
                 },
             ),
             # Both Gemini and OpenAI available - Google comes first in priority
@@ -123,8 +123,8 @@ class TestAutoModeComprehensive:
                 },
                 {
                     "EXTENDED_REASONING": "gemini-3-pro-preview",  # Gemini 3 Pro Preview comes first in priority
-                    "FAST_RESPONSE": "gemini-2.5-flash",  # Prefer flash for speed
-                    "BALANCED": "gemini-2.5-flash",  # Prefer flash for balanced
+                    "FAST_RESPONSE": "gemini-3-flash-preview",  # Prefer Flash 3 for speed
+                    "BALANCED": "gemini-3-flash-preview",  # Prefer Flash 3 for balanced
                 },
             ),
             # All native APIs available - Google still comes first
@@ -137,8 +137,8 @@ class TestAutoModeComprehensive:
                 },
                 {
                     "EXTENDED_REASONING": "gemini-3-pro-preview",  # Gemini 3 Pro Preview comes first in priority
-                    "FAST_RESPONSE": "gemini-2.5-flash",  # Prefer flash for speed
-                    "BALANCED": "gemini-2.5-flash",  # Prefer flash for balanced
+                    "FAST_RESPONSE": "gemini-3-flash-preview",  # Prefer Flash 3 for speed
+                    "BALANCED": "gemini-3-flash-preview",  # Prefer Flash 3 for balanced
                 },
             ),
         ],

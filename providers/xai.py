@@ -31,7 +31,9 @@ class XAIModelProvider(RegistryBackedProviderMixin, OpenAICompatibleProvider):
     MODEL_CAPABILITIES: ClassVar[dict[str, ModelCapabilities]] = {}
 
     # Canonical model identifiers used for category routing.
-    PRIMARY_MODEL = "grok-4-1-fast-reasoning"
+    PRIMARY_MODEL = "grok-4.3"
+    FAST_MODEL = "grok-4-1-fast-reasoning"
+    LONG_CONTEXT_MODEL = "grok-4.20-0309-reasoning"
     FALLBACK_MODEL = "grok-4"
 
     _X_POST_URL_PATTERN = re.compile(
@@ -211,8 +213,8 @@ class XAIModelProvider(RegistryBackedProviderMixin, OpenAICompatibleProvider):
         content = self._safe_extract_output_text(response)
 
         usage = None
-        if hasattr(response, "usage") and getattr(response, "usage"):
-            usage_obj = getattr(response, "usage")
+        if hasattr(response, "usage") and response.usage:
+            usage_obj = response.usage
             input_tokens = getattr(usage_obj, "input_tokens", None)
             output_tokens = getattr(usage_obj, "output_tokens", None)
             total_tokens = getattr(usage_obj, "total_tokens", None)
@@ -299,8 +301,8 @@ class XAIModelProvider(RegistryBackedProviderMixin, OpenAICompatibleProvider):
         content = self._safe_extract_output_text(response)
 
         usage = None
-        if hasattr(response, "usage") and getattr(response, "usage"):
-            usage_obj = getattr(response, "usage")
+        if hasattr(response, "usage") and response.usage:
+            usage_obj = response.usage
             input_tokens = getattr(usage_obj, "input_tokens", None)
             output_tokens = getattr(usage_obj, "output_tokens", None)
             total_tokens = getattr(usage_obj, "total_tokens", None)
@@ -393,29 +395,51 @@ class XAIModelProvider(RegistryBackedProviderMixin, OpenAICompatibleProvider):
         if not allowed_models:
             return None
 
+        def find_first(preferences: list[str]) -> Optional[str]:
+            for model in preferences:
+                if model in allowed_models:
+                    return model
+            return None
+
         if category == ToolModelCategory.EXTENDED_REASONING:
-            # Prefer Grok 4.1 Fast Reasoning for advanced tasks
-            if self.PRIMARY_MODEL in allowed_models:
-                return self.PRIMARY_MODEL
-            if self.FALLBACK_MODEL in allowed_models:
-                return self.FALLBACK_MODEL
-            return allowed_models[0]
+            preferred = find_first(
+                [
+                    self.PRIMARY_MODEL,
+                    self.LONG_CONTEXT_MODEL,
+                    self.FAST_MODEL,
+                    "grok-4-1-fast-reasoning",
+                    self.FALLBACK_MODEL,
+                    "grok-code-fast-1",
+                ]
+            )
+            return preferred if preferred else allowed_models[0]
 
         elif category == ToolModelCategory.FAST_RESPONSE:
-            # Prefer Grok 4.1 Fast Reasoning for speed as well (latest fast SKU).
-            if self.PRIMARY_MODEL in allowed_models:
-                return self.PRIMARY_MODEL
-            if self.FALLBACK_MODEL in allowed_models:
-                return self.FALLBACK_MODEL
-            return allowed_models[0]
+            preferred = find_first(
+                [
+                    self.FAST_MODEL,
+                    "grok-code-fast-1",
+                    self.PRIMARY_MODEL,
+                    "grok-4-fast-non-reasoning",
+                    self.LONG_CONTEXT_MODEL,
+                    "grok-4-1-fast-reasoning",
+                    self.FALLBACK_MODEL,
+                ]
+            )
+            return preferred if preferred else allowed_models[0]
 
         else:  # BALANCED or default
-            # Prefer Grok 4.1 Fast Reasoning for balanced use.
-            if self.PRIMARY_MODEL in allowed_models:
-                return self.PRIMARY_MODEL
-            if self.FALLBACK_MODEL in allowed_models:
-                return self.FALLBACK_MODEL
-            return allowed_models[0]
+            preferred = find_first(
+                [
+                    self.FAST_MODEL,
+                    self.PRIMARY_MODEL,
+                    self.LONG_CONTEXT_MODEL,
+                    self.FALLBACK_MODEL,
+                    "grok-4-1-fast-reasoning",
+                    "grok-code-fast-1",
+                ]
+            )
+            return preferred if preferred else allowed_models[0]
 
 
 # Load registry data at import time

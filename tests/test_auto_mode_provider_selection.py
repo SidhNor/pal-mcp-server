@@ -60,8 +60,8 @@ class TestAutoModeProviderSelection:
 
             # Should select appropriate Gemini models
             assert extended_reasoning in ["gemini-3-pro-preview", "gemini-2.5-pro", "pro"]
-            assert fast_response in ["gemini-2.5-flash", "flash"]
-            assert balanced in ["gemini-2.5-flash", "flash"]
+            assert fast_response in ["gemini-3-flash-preview", "gemini-2.5-flash", "flash"]
+            assert balanced in ["gemini-3-flash-preview", "gemini-2.5-flash", "flash"]
 
         finally:
             # Restore original environment
@@ -142,7 +142,7 @@ class TestAutoModeProviderSelection:
             assert extended_reasoning == "gemini-3-pro-preview"  # Gemini 3 Pro Preview has higher priority now
 
             # Should prefer Gemini for fast response
-            assert fast_response == "gemini-2.5-flash"  # Gemini has higher priority now
+            assert fast_response == "gemini-3-flash-preview"  # Gemini 3 Flash now ranks highest for fast response
 
         finally:
             # Restore original environment
@@ -320,7 +320,8 @@ class TestAutoModeProviderSelection:
                 ("pro", ProviderType.GOOGLE, "gemini-3-pro-preview"),  # "pro" now resolves to gemini-3-pro-preview
                 ("mini", ProviderType.OPENAI, "gpt-5-mini"),  # "mini" now resolves to gpt-5-mini
                 ("o3mini", ProviderType.OPENAI, "o3-mini"),
-                ("grok", ProviderType.XAI, "grok-4"),
+                ("grok", ProviderType.XAI, "grok-4.3"),
+                ("grok-4.20", ProviderType.XAI, "grok-4.20-0309-reasoning"),
                 ("grok-4.1-fast-reasoning", ProviderType.XAI, "grok-4-1-fast-reasoning"),
             ]
 
